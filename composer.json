@@ -6,9 +6,11 @@
     "craftcms",
     "craft-plugin",
     "alt-text",
-    "accessibility"
+    "accessibility",
+    "seo",
+    "ai"
   ],
-  "license": "MIT",
+  "license": "proprietary",
   "authors": [
     {
       "name": "Bryam Loaiza",
