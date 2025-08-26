@@ -1,6 +1,7 @@
 {
   "name": "bryamloaiza/alt-text-generator",
   "description": "Generate alt text for images using AI",
+  "version": "1.0.0",
   "type": "craft-plugin",
   "keywords": [
     "craftcms",
