@@ -1,6 +1,6 @@
 {
   "name": "bryamloaiza/alt-text-generator",
-  "description": "Generate alt text for CraftCMS Asset Images",
+  "description": "Generate alt text for images using AI",
   "type": "craft-plugin",
   "keywords": [
     "craftcms",
@@ -12,7 +12,7 @@
   "authors": [
     {
       "name": "Bryam Loaiza",
-      "email": "bryam@example.com"
+      "email": "balt1794@gmail.com"
     }
   ],
   "require": {

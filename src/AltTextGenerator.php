@@ -51,7 +51,7 @@ class AltTextGenerator extends Plugin
 
         // Register the service
         $this->setComponents([
-            'aiAltTextService' => AiAltTextService::class,
+            'altTextService' => AltTextService::class, 
         ]);
 
         // Register template path

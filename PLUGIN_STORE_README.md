@@ -1,23 +1,23 @@
-# 🤖 💬 AI Alt Text
+# 🤖 💬 Alt Text Generator
   
-Generate alt text for CraftCMS Asset Images using OpenAI's API.
+Generate alt text for Craft Asset Images using AI.
 
-[Plugin Store](https://plugins.craftcms.com/ai-alt-text?craft5) | [GitHub Repository](https://github.com/heavymetalavo/craft-aialttext)
+[Plugin Store](https://plugins.craftcms.com/alt-text-generator?craft5) | [GitHub Repository](https://github.com/balt1794/alt-text-generator-craft-cms)
 
 ## Video demo
 
-[Watch on GitHub](https://github.com/heavymetalavo/craft-aialttext?tab=readme-ov-file#video-demo)
+[Watch tutorial](https://youtube.com)
 
 ## 📋 Requirements
 
 This plugin requires: 
 - Craft CMS 5.0.0 or later
 - PHP 8.2 or later
-- An OpenAI API key
+- An Alt Text Generator AI API Key
 
 ## 📥 Installation
 
-You can install this plugin from [the Plugin Store](https://plugins.craftcms.com/ai-alt-text?craft5) or with Composer.
+You can install this plugin from [the Plugin Store](https://plugins.craftcms.com/alt-text-generator?craft5) or with Composer.
 
 ### 📦 With Composer
 
@@ -25,18 +25,18 @@ Open your terminal and run the following commands:
 
 ```sh
 # tell Composer to load the plugin
-composer require heavymetalavo/craft-aialttext
+composer require bryamloaiza/alt-text-generator
 # or
-ddev composer require heavymetalavo/craft-aialttext
+ddev composer require bryamloaiza/alt-text-generator
 ```
 
 Then:
 
 ```sh
 # tell Craft to install the plugin
-./craft plugin/install ai-alt-text
+./craft plugin/install alt-text-generator
 # or
-ddev craft plugin/install ai-alt-text
+ddev craft plugin/install alt-text-generator
 ```
 
 ## 🤖 Setup OpenAI API Key
