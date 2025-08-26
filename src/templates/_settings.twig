@@ -21,6 +21,15 @@
     <button type="button" id="toggle-api-key" class="btn small" style="font-size: 12px; padding: 5px 10px;">Show</button>
 </div>
 
+<div style="margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px;">
+    <p style="margin: 0; color: #495057;">
+        <strong>Need an API key?</strong> 
+        <a href="https://alttextgeneratorai.com/dashboard" target="_blank" style="color: #007bff; text-decoration: none;">
+            Get a free API key here
+        </a>
+    </p>
+</div>
+
 {{ forms.selectField({
     label: 'Language',
     instructions: 'Select the language for alt text generation.',
@@ -28,17 +37,41 @@
     name: 'language',
     value: settings.language,
     options: {
-        'en': 'English',
-        'es': 'Spanish',
-        'fr': 'French',
-        'de': 'German',
-        'it': 'Italian',
-        'pt': 'Portuguese',
-        'nl': 'Dutch',
-        'ru': 'Russian',
-        'ja': 'Japanese',
-        'ko': 'Korean',
-        'zh': 'Chinese'
+        'English': 'English',
+        'Spanish': 'Spanish',
+        'French': 'French',
+        'German': 'German',
+        'Italian': 'Italian',
+        'Portuguese': 'Portuguese',
+        'Dutch': 'Dutch',
+        'Russian': 'Russian',
+        'Chinese': 'Chinese',
+        'Japanese': 'Japanese',
+        'Korean': 'Korean',
+        'Arabic': 'Arabic',
+        'Swedish': 'Swedish',
+        'Norwegian': 'Norwegian',
+        'Danish': 'Danish',
+        'Finnish': 'Finnish',
+        'Polish': 'Polish',
+        'Turkish': 'Turkish',
+        'Hindi': 'Hindi',
+        'Bengali': 'Bengali',
+        'Urdu': 'Urdu',
+        'Thai': 'Thai',
+        'Vietnamese': 'Vietnamese',
+        'Indonesian': 'Indonesian',
+        'Malay': 'Malay',
+        'Filipino': 'Filipino',
+        'Greek': 'Greek',
+        'Hebrew': 'Hebrew',
+        'Hungarian': 'Hungarian',
+        'Czech': 'Czech',
+        'Romanian': 'Romanian',
+        'Bulgarian': 'Bulgarian',
+        'Ukrainian': 'Ukrainian',
+        'Croatian': 'Croatian',
+        'Serbian': 'Serbian'
     }
 }) }}
 

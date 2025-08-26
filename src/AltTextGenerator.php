@@ -136,7 +136,7 @@ class AltTextGenerator extends Plugin
                     // Get plugin settings
                     $settings = AltTextGenerator::getInstance()->getSettings();
                     $apiKey = $settings->apiKey ?? '';
-                    $language = $settings->language ?? 'english';
+                    $language = $settings->language ?? 'English';
                     
                     $js = <<<JS
 // Embed plugin settings directly in JavaScript
@@ -232,7 +232,7 @@ if (altInput && altField && !document.getElementById('generate-alt-btn')) {
                  console.log('Alt Text Generator: Loading settings...');
                  const settings = window.AltTextGeneratorSettings || {};
                  const apiKey = settings.apiKey || '';
-                 const language = settings.language || 'english';
+                 const language = settings.language || 'English';
                  
                  console.log('Alt Text Generator: API key from settings:', apiKey ? 'Found (' + apiKey.length + ' chars)' : 'Not found');
                  console.log('Alt Text Generator: Language from settings:', language);

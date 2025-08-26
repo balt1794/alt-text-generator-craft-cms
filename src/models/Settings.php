@@ -24,7 +24,7 @@ class Settings extends Model
     /**
      * @var string The language for alt text generation
      */
-    public string $language = 'en';
+    public string $language = 'English';
 
     /**
      * @var bool Whether to generate alt text for new assets automatically
@@ -39,7 +39,7 @@ class Settings extends Model
         return [
             [['apiKey'], 'string'],
             [['language'], 'string'],
-            [['language'], 'default', 'value' => 'en'],
+            [['language'], 'default', 'value' => 'English'],
             [['generateForNewAssets'], 'boolean'],
             [['generateForNewAssets'], 'default', 'value' => false],
         ];
