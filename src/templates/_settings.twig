@@ -1,0 +1,412 @@
+{# @var plugin \heavymetalavo\craftaialttext\AiAltText #}
+{# @var settings \heavymetalavo\craftaialttext\models\Settings #}
+{% import '_includes/forms.twig' as forms %}
+
+<h2>Alt Text Generator Settings</h2>
+
+<p>Configure your Alt Text Generator plugin settings below.</p>
+
+{{ forms.textField({
+    label: 'API Key',
+    instructions: 'Enter your API key for generating alt text.',
+    id: 'apiKey',
+    name: 'apiKey',
+    value: settings.apiKey,
+    type: 'password',
+    placeholder: 'Enter your API key...',
+    required: false
+}) }}
+
+<div style="margin-top: -15px; margin-bottom: 20px;">
+    <button type="button" id="toggle-api-key" class="btn small" style="font-size: 12px; padding: 5px 10px;">Show</button>
+</div>
+
+{{ forms.selectField({
+    label: 'Language',
+    instructions: 'Select the language for alt text generation.',
+    id: 'language',
+    name: 'language',
+    value: settings.language,
+    options: {
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'it': 'Italian',
+        'pt': 'Portuguese',
+        'nl': 'Dutch',
+        'ru': 'Russian',
+        'ja': 'Japanese',
+        'ko': 'Korean',
+        'zh': 'Chinese'
+    }
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Generate for New Assets',
+    instructions: 'Automatically generate alt text when new image assets are uploaded.',
+    id: 'generateForNewAssets',
+    name: 'generateForNewAssets',
+    on: settings.generateForNewAssets
+}) }}
+
+<div class="field">
+    <div class="heading">
+        <label>API Key Verification</label>
+        <div class="instructions">
+            <p>Your remaining credits are shown below. Click "Refresh Credits" to update manually.</p>
+        </div>
+    </div>
+    <div class="input">
+        <button type="button" id="verify-api-key" class="btn" onclick="verifyApiKey()">Refresh Credits</button>
+        <div id="verification-result" style="margin-top: 10px;"></div>
+        <div id="credits-display" style="margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 4px;">
+            <strong>Credits Remaining: <span id="credits-count">Loading...</span></strong>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+// Global function for button click
+async function verifyApiKey() {
+    console.log('verifyApiKey function called!');
+    
+    const verifyButton = document.getElementById('settings-verify-api-key') || document.getElementById('verify-api-key');
+    const resultDiv = document.getElementById('verification-result') || document.getElementById('settings-verification-result') || document.querySelector('[id*="verification-result"]');
+    const creditsDisplay = document.getElementById('credits-display') || document.getElementById('settings-credits-display') || document.querySelector('[id*="credits-display"]');
+    const creditsCount = document.getElementById('credits-count') || document.getElementById('settings-credits-count') || document.querySelector('[id*="credits-count"]');
+    
+    console.log('Button found:', !!verifyButton, 'Button ID:', verifyButton?.id);
+    console.log('Result div found:', !!resultDiv, 'Result div ID:', resultDiv?.id);
+    console.log('Credits display found:', !!creditsDisplay, 'Credits display ID:', creditsDisplay?.id);
+    console.log('Credits count found:', !!creditsCount, 'Credits count ID:', creditsCount?.id);
+    
+    // Debug: show all elements with these partial IDs
+    console.log('All verification elements:', document.querySelectorAll('[id*="verification"]'));
+    console.log('All credits elements:', document.querySelectorAll('[id*="credits"]'));
+    
+    if (verifyButton) {
+        verifyButton.disabled = true;
+        verifyButton.textContent = 'Verifying...';
+    }
+    
+    if (resultDiv) resultDiv.innerHTML = '';
+    if (creditsDisplay) creditsDisplay.style.display = 'none';
+    
+    // Try multiple ways to find the API key field
+    const apiKeyField = document.getElementById('apiKey') || 
+                       document.querySelector('input[name="apiKey"]') ||
+                       document.querySelector('#settings-apiKey') ||
+                       document.querySelector('input[type="password"]');
+    
+    console.log('API Key field found:', !!apiKeyField);
+    if (!apiKeyField) {
+        console.log('All input fields:', document.querySelectorAll('input'));
+        if (resultDiv) resultDiv.innerHTML = '<div class="error">❌ Could not find API key field</div>';
+        if (verifyButton) {
+            verifyButton.disabled = false;
+            verifyButton.textContent = 'Verify API Key';
+        }
+        return;
+    }
+    
+    const apiKey = apiKeyField.value;
+    console.log('API Key found:', apiKey ? 'Yes (' + apiKey.length + ' chars)' : 'No');
+    
+    if (!apiKey) {
+        if (resultDiv) resultDiv.innerHTML = '<div class="error">Please enter an API key first.</div>';
+        if (verifyButton) {
+            verifyButton.disabled = false;
+            verifyButton.textContent = 'Verify API Key';
+        }
+        return;
+    }
+    
+    try {
+        console.log('Making API call to verify credits...');
+        console.log('Request body:', JSON.stringify({ apiKey: apiKey }));
+        
+        const response = await fetch('https://alttextgeneratorai.com/api/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                apiKey: apiKey
+            })
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        console.log('Response ok:', response.ok);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            if (data.freeRewritesLeft !== undefined) {
+                // Success - show credits
+                console.log('Updating UI with credits:', data.freeRewritesLeft);
+                console.log('Result div found:', !!resultDiv);
+                console.log('Credits display found:', !!creditsDisplay);
+                console.log('Credits count found:', !!creditsCount);
+                
+                if (resultDiv) {
+                    resultDiv.innerHTML = '<div style="color: green; font-weight: bold;">✅ API key is valid!</div>';
+                    console.log('Updated result div');
+                }
+                
+                if (creditsCount) {
+                    creditsCount.textContent = data.freeRewritesLeft;
+                    console.log('Updated credits count to:', data.freeRewritesLeft);
+                }
+                
+                if (creditsDisplay) {
+                    creditsDisplay.style.display = 'block';
+                    console.log('Made credits display visible');
+                    
+                    // Style credits based on amount
+                    if (data.freeRewritesLeft > 10) {
+                        creditsDisplay.style.background = '#d4edda';
+                        creditsDisplay.style.color = '#155724';
+                    } else if (data.freeRewritesLeft > 0) {
+                        creditsDisplay.style.background = '#fff3cd';
+                        creditsDisplay.style.color = '#856404';
+                    } else {
+                        creditsDisplay.style.background = '#f8d7da';
+                        creditsDisplay.style.color = '#721c24';
+                    }
+                    console.log('Applied styling based on credits amount');
+                }
+            } else {
+                console.log('freeRewritesLeft not found in response');
+                if (resultDiv) resultDiv.innerHTML = '<div class="error">❌ Invalid response from API</div>';
+            }
+        } else if (response.status === 404) {
+            if (resultDiv) resultDiv.innerHTML = '<div class="error">❌ API key not found. Please check your key.</div>';
+        } else {
+            const errorText = await response.text();
+            console.log('Error response:', errorText);
+            if (resultDiv) resultDiv.innerHTML = '<div class="error">❌ Error: ' + (errorText || 'Unknown error') + '</div>';
+        }
+    } catch (error) {
+        console.error('Verification error:', error);
+        if (resultDiv) resultDiv.innerHTML = '<div class="error">❌ Network error. Please check your connection and try again.</div>';
+    }
+    
+    if (verifyButton) {
+        verifyButton.disabled = false;
+        verifyButton.textContent = 'Verify API Key';
+    }
+}
+
+// Use setTimeout to ensure Craft's JavaScript has finished loading
+setTimeout(function() {
+    console.log('Alt Text Generator Settings: Script loaded with delay');
+    
+    const verifyButton = document.getElementById('verify-api-key');
+    const resultDiv = document.getElementById('verification-result');
+    const creditsDisplay = document.getElementById('credits-display');
+    const creditsCount = document.getElementById('credits-count');
+    
+    console.log('Elements found:', {
+        verifyButton: !!verifyButton,
+        resultDiv: !!resultDiv,
+        creditsDisplay: !!creditsDisplay,
+        creditsCount: !!creditsCount
+    });
+    
+    // Try alternative selectors if primary ones fail
+    if (!verifyButton) {
+        console.log('Trying alternative selectors...');
+        const altButton = document.querySelector('button[id="verify-api-key"]') || 
+                         document.querySelector('.btn');
+        console.log('Alternative button found:', !!altButton);
+    }
+    
+    if (verifyButton) {
+        console.log('Adding click listener to verify button');
+        verifyButton.addEventListener('click', async function() {
+            console.log('Verify button clicked!');
+            this.disabled = true;
+            this.textContent = 'Verifying...';
+            resultDiv.innerHTML = '';
+            creditsDisplay.style.display = 'none';
+            
+            const apiKey = document.getElementById('apiKey').value;
+            console.log('API Key found:', apiKey ? 'Yes (' + apiKey.length + ' chars)' : 'No');
+            
+            if (!apiKey) {
+                resultDiv.innerHTML = '<div class="error">Please enter an API key first.</div>';
+                this.disabled = false;
+                this.textContent = 'Verify API Key';
+                return;
+            }
+            
+            try {
+                // Call your credits API
+                console.log('Making API call to verify credits...');
+                const response = await fetch('https://alttextgeneratorai.com/api/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        apiKey: apiKey
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.freeRewritesLeft !== undefined) {
+                        // Success - show credits
+                        resultDiv.innerHTML = '<div class="success">✅ API key is valid!</div>';
+                        creditsCount.textContent = data.freeRewritesLeft;
+                        creditsDisplay.style.display = 'block';
+                        
+                        // Style credits based on amount
+                        if (data.freeRewritesLeft > 10) {
+                            creditsDisplay.style.background = '#d4edda';
+                            creditsDisplay.style.color = '#155724';
+                        } else if (data.freeRewritesLeft > 0) {
+                            creditsDisplay.style.background = '#fff3cd';
+                            creditsDisplay.style.color = '#856404';
+                        } else {
+                            creditsDisplay.style.background = '#f8d7da';
+                            creditsDisplay.style.color = '#721c24';
+                        }
+                    } else {
+                        resultDiv.innerHTML = '<div class="error">❌ Invalid response from API</div>';
+                    }
+                } else if (response.status === 404) {
+                    resultDiv.innerHTML = '<div class="error">❌ API key not found. Please check your key.</div>';
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = '<div class="error">❌ Error: ' + (errorText || 'Unknown error') + '</div>';
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                resultDiv.innerHTML = '<div class="error">❌ Network error. Please check your connection and try again.</div>';
+            }
+            
+            this.disabled = false;
+            this.textContent = 'Verify API Key';
+        });
+    } else {
+        console.error('Verify button not found!');
+        console.log('All buttons on page:', document.querySelectorAll('button'));
+        console.log('All elements with verify in id:', document.querySelectorAll('[id*="verify"]'));
+    }
+    
+    // Auto-load credits on page load
+    autoLoadCredits();
+    
+    // Setup show/hide API key button
+    setupApiKeyToggle();
+    
+}, 1000); // Wait 1 second for page to fully load
+
+// Function to automatically load credits when page loads
+async function autoLoadCredits() {
+    console.log('Auto-loading credits...');
+    
+    // Get plugin settings from embedded JavaScript
+    const settings = window.AltTextGeneratorSettings || {};
+    const apiKey = settings.apiKey || '';
+    
+    console.log('Auto-load: API key found:', apiKey ? 'Yes (' + apiKey.length + ' chars)' : 'No');
+    
+    if (!apiKey) {
+        const creditsCount = document.getElementById('credits-count') || document.getElementById('settings-credits-count') || document.querySelector('[id*="credits-count"]');
+        if (creditsCount) {
+            creditsCount.textContent = 'API key required';
+            creditsCount.style.color = '#dc3545';
+        }
+        return;
+    }
+    
+    try {
+        console.log('Auto-load: Making API call...');
+        const response = await fetch('https://alttextgeneratorai.com/api/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                apiKey: apiKey
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Auto-load: Response data:', data);
+            
+            const creditsDisplay = document.getElementById('credits-display') || document.getElementById('settings-credits-display') || document.querySelector('[id*="credits-display"]');
+            const creditsCount = document.getElementById('credits-count') || document.getElementById('settings-credits-count') || document.querySelector('[id*="credits-count"]');
+            
+            if (data.freeRewritesLeft !== undefined) {
+                if (creditsCount) {
+                    creditsCount.textContent = data.freeRewritesLeft;
+                    creditsCount.style.color = 'inherit';
+                }
+                
+                if (creditsDisplay) {
+                    // Style credits based on amount
+                    if (data.freeRewritesLeft > 10) {
+                        creditsDisplay.style.background = '#d4edda';
+                        creditsDisplay.style.color = '#155724';
+                    } else if (data.freeRewritesLeft > 0) {
+                        creditsDisplay.style.background = '#fff3cd';
+                        creditsDisplay.style.color = '#856404';
+                    } else {
+                        creditsDisplay.style.background = '#f8d7da';
+                        creditsDisplay.style.color = '#721c24';
+                    }
+                }
+                
+                console.log('Auto-load: Credits updated to:', data.freeRewritesLeft);
+            }
+        } else {
+            console.log('Auto-load: API call failed with status:', response.status);
+            const creditsCount = document.getElementById('credits-count') || document.getElementById('settings-credits-count') || document.querySelector('[id*="credits-count"]');
+            if (creditsCount) {
+                creditsCount.textContent = 'Error loading';
+                creditsCount.style.color = '#dc3545';
+            }
+        }
+    } catch (error) {
+        console.error('Auto-load: Error:', error);
+        const creditsCount = document.getElementById('credits-count') || document.getElementById('settings-credits-count') || document.querySelector('[id*="credits-count"]');
+        if (creditsCount) {
+            creditsCount.textContent = 'Error loading';
+            creditsCount.style.color = '#dc3545';
+        }
+    }
+}
+
+// Function to setup API key show/hide toggle
+function setupApiKeyToggle() {
+    const toggleButton = document.getElementById('toggle-api-key') || document.getElementById('settings-toggle-api-key');
+    const apiKeyField = document.getElementById('apiKey') || 
+                       document.querySelector('input[name="apiKey"]') ||
+                       document.querySelector('#settings-apiKey') ||
+                       document.querySelector('input[type="password"]');
+    
+    console.log('Setting up API key toggle - Button:', !!toggleButton, 'Field:', !!apiKeyField);
+    
+    if (toggleButton && apiKeyField) {
+                 toggleButton.addEventListener('click', function() {
+             if (apiKeyField.type === 'password') {
+                 apiKeyField.type = 'text';
+                 toggleButton.innerHTML = 'Hide';
+             } else {
+                 apiKeyField.type = 'password';
+                 toggleButton.innerHTML = 'Show';
+             }
+         });
+    }
+}
+</script>
