@@ -28,8 +28,8 @@
     }
   },
   "extra": {
-    "handle": "alt-text-generator",
-    "name": "Alt Text Generator",
+    "handle": "alt-text-generator-a",
+    "name": "Alt Text Generator AI",
     "developer": "Bryam Loaiza",
     "class": "bryamloaiza\\alttextgenerator\\AltTextGenerator"
   },
